@@ -1,9 +1,16 @@
 name: 番茄小说热门榜单每日更新
 
 on:
+  # 每天北京时间15:00运行（UTC 07:00）
   schedule:
     - cron: '0 7 * * *'
+  # 手动触发
   workflow_dispatch:
+  # 当 index.html 被修改时也触发（只做部署，不跑爬虫）
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
 
 permissions:
   contents: write
@@ -29,10 +36,24 @@ jobs:
         with:
           node-version: '20'
 
+      # 只在定时任务或手动触发时运行爬虫（push触发时跳过）
       - name: 运行爬虫
+        if: github.event_name != 'push'
+        id: scraper
+        continue-on-error: true
         run: node scraper.js
 
+      - name: 爬虫结果
+        if: github.event_name != 'push'
+        run: |
+          if [ "${{ steps.scraper.outcome }}" = "failure" ]; then
+            echo "⚠️ 爬虫运行失败，将使用已有数据继续部署"
+          else
+            echo "✅ 爬虫运行成功"
+          fi
+
       - name: 提交数据变更
+        if: github.event_name != 'push' && steps.scraper.outcome == 'success'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
@@ -40,6 +61,7 @@ jobs:
           git diff --staged --quiet || git commit -m "📊 更新榜单数据 $(date -u +%Y-%m-%d)"
           git push
 
+      # 部署步骤：无论爬虫是否成功，始终执行
       - name: 准备 Pages 部署内容
         run: |
           mkdir -p _site
