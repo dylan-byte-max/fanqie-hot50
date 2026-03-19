@@ -331,4 +331,14 @@ async function main() {
   console.log(`   历史: ${histPath}`);
 }
 
-main().catch(e => { console.error('致命错误:', e); process.exit(1); });
+main().catch(e => {
+  console.error('致命错误:', e);
+  // 如果有历史数据，不算致命失败（下次再重试就好）
+  const latestPath = path.join(__dirname, 'data', 'latest.json');
+  if (fs.existsSync(latestPath)) {
+    console.log('⚠️ 爬虫本次运行失败，但已有历史数据可用，退出码 0');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
+});
