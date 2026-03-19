@@ -183,6 +183,39 @@
       color: var(--accent);
     }
 
+    /* 今日新上榜按钮特殊样式 */
+    .filter-btn.new-btn {
+      position: relative;
+    }
+    .filter-btn.new-btn .new-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 9px;
+      background: var(--yellow);
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 6px;
+      line-height: 1;
+    }
+    .filter-btn.new-btn.active {
+      background: rgba(251,191,36,0.18);
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+    .filter-btn.new-btn:hover {
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+    .filter-btn.new-btn.no-new {
+      opacity: 0.5;
+      cursor: default;
+    }
+
     /* 历史选择器 */
     .history-select {
       padding: 8px 12px;
@@ -202,6 +235,7 @@
       padding: 0 24px 40px;
     }
 
+    /* ===== 新卡片布局：左侧信息 + 右侧简介 ===== */
     .book-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -210,7 +244,7 @@
       margin-bottom: 10px;
       display: flex;
       gap: 16px;
-      align-items: flex-start;
+      align-items: stretch;
       transition: all .2s;
       cursor: pointer;
       text-decoration: none;
@@ -227,6 +261,10 @@
       flex-shrink: 0;
       width: 52px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
     .rank-num {
       font-size: 24px;
@@ -269,15 +307,18 @@
       border: 1px solid var(--border);
     }
 
-    /* 信息区 */
+    /* 左侧信息区 - 书名、作者、标签 */
     .info-col {
       flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .book-title {
       font-size: 16px;
       font-weight: 700;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -330,7 +371,6 @@
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      margin-bottom: 8px;
     }
     .tag {
       font-size: 11px;
@@ -340,14 +380,69 @@
       color: var(--tag-text);
     }
 
-    .abstract {
+    /* ===== 右侧简介区 ===== */
+    .abstract-col {
+      flex: 0 0 360px;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      border-left: 1px solid var(--border);
+      padding-left: 20px;
+      margin-left: 4px;
+    }
+    .abstract-text {
       font-size: 13px;
       color: var(--text2);
-      line-height: 1.5;
+      line-height: 1.65;
       display: -webkit-box;
-      -webkit-line-clamp: 2;
+      -webkit-line-clamp: 5;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+
+    /* 新上榜高亮卡片 */
+    .book-card.is-new {
+      border-color: rgba(251,191,36,0.3);
+      background: linear-gradient(135deg, var(--card) 0%, rgba(251,191,36,0.04) 100%);
+    }
+    .book-card.is-new:hover {
+      border-color: var(--yellow);
+      box-shadow: 0 4px 20px rgba(251,191,36,0.1);
+    }
+
+    /* 今日新上榜提示横幅 */
+    .new-banner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: none;
+    }
+    .new-banner.show {
+      display: block;
+    }
+    .new-banner-inner {
+      background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(255,107,74,0.06) 100%);
+      border: 1px solid rgba(251,191,36,0.25);
+      border-radius: 12px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .new-banner-icon {
+      font-size: 22px;
+    }
+    .new-banner-text {
+      font-size: 14px;
+      color: var(--yellow);
+      font-weight: 600;
+    }
+    .new-banner-text span {
+      color: var(--text2);
+      font-weight: 400;
+      margin-left: 8px;
+      font-size: 13px;
     }
 
     /* 加载状态 */
@@ -385,32 +480,40 @@
     }
     .footer a { color: var(--accent); text-decoration: none; }
 
-    /* 展开简介 */
-    .abstract-full {
-      display: none;
-      font-size: 13px;
-      color: var(--text2);
-      line-height: 1.6;
-      margin-top: 8px;
-      padding: 10px 14px;
-      background: var(--bg3);
-      border-radius: 8px;
+    /* ===== 响应式 ===== */
+    @media (max-width: 1024px) {
+      .abstract-col {
+        flex: 0 0 280px;
+        max-width: 280px;
+      }
     }
-    .book-card.expanded .abstract { display: none; }
-    .book-card.expanded .abstract-full { display: block; }
-
-    /* 响应式 */
     @media (max-width: 768px) {
       .header-inner { padding: 12px 16px; }
       .logo h1 { font-size: 17px; }
-      .stats-bar, .controls, .book-list { padding-left: 16px; padding-right: 16px; }
-      .book-card { padding: 14px; gap: 12px; }
+      .stats-bar, .controls, .book-list, .new-banner { padding-left: 16px; padding-right: 16px; }
+      .book-card {
+        padding: 14px;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
       .rank-col { width: 40px; }
       .rank-num { font-size: 20px; }
       .cover-col { width: 56px; }
       .cover-img { width: 56px; height: 74px; }
       .book-title { font-size: 14px; }
       .search-box { min-width: 150px; }
+
+      /* 移动端简介放到卡片底部，全宽显示 */
+      .abstract-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding-left: 0;
+        padding-top: 12px;
+        margin-left: 0;
+        margin-top: 4px;
+      }
     }
     @media (max-width: 480px) {
       .cover-col { display: none; }
@@ -448,6 +551,9 @@
       <input type="text" id="searchInput" placeholder="搜索书名或作者...">
     </div>
     <button class="filter-btn active" data-filter="all">全部</button>
+    <button class="filter-btn new-btn" data-filter="new" id="newFilterBtn">
+      🆕 今日新上榜<span class="new-count" id="newCount">0</span>
+    </button>
     <button class="filter-btn" data-filter="male">男频</button>
     <button class="filter-btn" data-filter="female">女频</button>
     <button class="filter-btn" data-filter="ongoing">连载中</button>
@@ -455,6 +561,17 @@
     <select class="history-select" id="historySelect">
       <option value="">📅 历史记录</option>
     </select>
+  </div>
+
+  <!-- 今日新上榜横幅 -->
+  <div class="new-banner" id="newBanner">
+    <div class="new-banner-inner">
+      <span class="new-banner-icon">🔥</span>
+      <div class="new-banner-text">
+        今日有 <span id="newBannerCount">0</span> 本新书冲入 Top50！
+        <span>点击上方按钮查看详情</span>
+      </div>
+    </div>
   </div>
 
   <!-- 列表 -->
@@ -506,6 +623,7 @@
       const genderCount = { '男频': 0, '女频': 0 };
       const statusCount = { '连载中': 0, '完结': 0 };
       const categories = {};
+      let newCount = 0;
       
       for (const b of data.books) {
         if (b.gender === '男频') genderCount['男频']++;
@@ -513,6 +631,7 @@
         if (b.status === '连载中') statusCount['连载中']++;
         else if (b.status === '完结') statusCount['完结']++;
         for (const t of (b.tags || [])) { categories[t] = (categories[t]||0) + 1; }
+        if (b.rank_change === 'new') newCount++;
       }
 
       const topCats = Object.entries(categories).sort((a,b) => b[1]-a[1]).slice(0, 5);
@@ -525,6 +644,27 @@
         <div class="stat-chip">✅ 完结 <span class="val">${statusCount['完结']}</span></div>
         ${topCats.map(([name,count]) => `<div class="stat-chip">${name} <span class="val">${count}</span></div>`).join('')}
       `;
+
+      // 更新新上榜按钮的计数
+      updateNewCount(newCount);
+    }
+
+    function updateNewCount(count) {
+      const btn = document.getElementById('newFilterBtn');
+      const countEl = document.getElementById('newCount');
+      const banner = document.getElementById('newBanner');
+      const bannerCount = document.getElementById('newBannerCount');
+
+      countEl.textContent = count;
+      bannerCount.textContent = count;
+
+      if (count > 0) {
+        btn.classList.remove('no-new');
+        banner.classList.add('show');
+      } else {
+        btn.classList.add('no-new');
+        banner.classList.remove('show');
+      }
     }
 
     function renderRankChange(change) {
@@ -539,13 +679,14 @@
       const rankClass = book.rank <= 3 ? `rank-${book.rank}` : 'rank-other';
       const genderClass = book.gender === '男频' ? 'gender-male' : (book.gender === '女频' ? 'gender-female' : 'gender-unknown');
       const statusClass = book.status === '连载中' ? 'status-ongoing' : 'status-ended';
+      const isNew = book.rank_change === 'new';
 
       // 封面处理：使用https，失败时显示占位
       let coverSrc = book.thumb_url || '';
       if (coverSrc.startsWith('http://')) coverSrc = coverSrc.replace('http://', 'https://');
       
       return `
-        <a class="book-card" href="${book.book_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+        <a class="book-card ${isNew ? 'is-new' : ''}" href="${book.book_url}" target="_blank" rel="noopener">
           <div class="rank-col">
             <div class="rank-num ${rankClass}">${book.rank}</div>
             ${renderRankChange(book.rank_change)}
@@ -564,8 +705,9 @@
             <div class="tag-list">
               ${(book.tags||[]).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
             </div>
-            <div class="abstract">${escHtml(book.abstract)}</div>
-            <div class="abstract-full">${escHtml(book.abstract)}</div>
+          </div>
+          <div class="abstract-col">
+            <div class="abstract-text">${escHtml(book.abstract)}</div>
           </div>
         </a>
       `;
@@ -574,7 +716,10 @@
     function renderBookList(books) {
       const container = document.getElementById('bookList');
       if (!books || books.length === 0) {
-        container.innerHTML = '<div class="empty-state">😢 没有找到匹配的书籍</div>';
+        const msg = currentFilter === 'new' 
+          ? '😊 今天暂无新上榜的小说，明天再来看看吧！' 
+          : '😢 没有找到匹配的书籍';
+        container.innerHTML = `<div class="empty-state">${msg}</div>`;
         return;
       }
       container.innerHTML = books.map(renderBookCard).join('');
@@ -606,6 +751,17 @@
         case 'female': filtered = filtered.filter(b => b.gender === '女频'); break;
         case 'ongoing': filtered = filtered.filter(b => b.status === '连载中'); break;
         case 'ended': filtered = filtered.filter(b => b.status === '完结'); break;
+        case 'new': filtered = filtered.filter(b => b.rank_change === 'new'); break;
+      }
+
+      // 控制新上榜横幅显示：只在"全部"模式下显示
+      const banner = document.getElementById('newBanner');
+      if (currentFilter === 'all') {
+        const newCount = allBooks.filter(b => b.rank_change === 'new').length;
+        if (newCount > 0) banner.classList.add('show');
+        else banner.classList.remove('show');
+      } else {
+        banner.classList.remove('show');
       }
 
       renderBookList(filtered);
@@ -622,6 +778,9 @@
       // 过滤按钮
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+          // 如果是no-new的新上榜按钮且没有新书，不执行
+          if (btn.classList.contains('no-new')) return;
+
           document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           currentFilter = btn.dataset.filter;
@@ -638,15 +797,11 @@
           allBooks = data.books;
           document.getElementById('updateTime').textContent = `${data.update_time} 的数据`;
           renderStats(data);
+          // 切换到"全部"
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          document.querySelector('[data-filter="all"]').classList.add('active');
+          currentFilter = 'all';
           applyFilters();
-        }
-      });
-
-      // 卡片展开/收起
-      document.getElementById('bookList').addEventListener('click', (e) => {
-        const card = e.target.closest('.book-card');
-        if (card && !e.target.closest('a[href]')) {
-          card.classList.toggle('expanded');
         }
       });
     }
