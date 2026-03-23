@@ -40,14 +40,19 @@ jobs:
           git diff --staged --quiet || git commit -m "📊 更新榜单数据 $(date -u +%Y-%m-%d)"
           git push
 
-      - name: 重新检出最新代码
+      - name: 重新检出最新代码（包含刚 push 的数据）
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: 准备部署内容
         run: |
           mkdir -p _site
           cp index.html _site/
           cp -r data _site/data
+          echo "--- 验证部署数据 ---"
+          cat _site/data/latest.json | head -5
 
       - name: 上传 Pages artifact
         uses: actions/upload-pages-artifact@v3
