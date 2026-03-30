@@ -806,6 +806,39 @@
       });
     }
 
+    // ========== 异步加载全部历史，重新计算新上榜（对比所有历史） ==========
+    async function recalcNewBooks(historyIndex, currentBooks) {
+      // 至少要有 2 天数据才有意义（最新一天 + 至少 1 天历史）
+      if (!historyIndex || historyIndex.length <= 1) return;
+
+      // 排除最新一天（即当前展示的这期），只加载更早的历史
+      const pastDates = historyIndex.slice(1);
+      const pastBookIds = new Set();
+
+      // 并发加载所有过往历史 JSON
+      await Promise.all(pastDates.map(async (date) => {
+        try {
+          const res = await fetch(`data/history/${date}.json`);
+          if (!res.ok) return;
+          const histData = await res.json();
+          if (histData && histData.books) {
+            histData.books.forEach(b => pastBookIds.add(b.book_id));
+          }
+        } catch (e) { /* 忽略单个文件失败 */ }
+      }));
+
+      // 真正的新上榜 = 当前榜单里有，但过去所有历史中从未出现过
+      allBooks = currentBooks.map(book => ({
+        ...book,
+        rank_change: !pastBookIds.has(book.book_id) ? 'new'
+          : (book.rank_change === 'new' ? 0 : book.rank_change)
+      }));
+
+      // 重新渲染统计和列表
+      renderStats({ books: allBooks, total_count: allBooks.length });
+      applyFilters();
+    }
+
     // ========== 初始化 ==========
     async function init() {
       bindEvents();
@@ -821,6 +854,9 @@
         document.getElementById('updateTime').textContent = `更新于 ${data.update_time}`;
         renderStats(data);
         applyFilters();
+
+        // 异步重新计算"真正的新上榜"（对比全部历史）
+        recalcNewBooks(historyIndex, data.books);
       } else {
         document.getElementById('bookList').innerHTML = 
           '<div class="empty-state">😢 暂无数据，请稍后再试</div>';
